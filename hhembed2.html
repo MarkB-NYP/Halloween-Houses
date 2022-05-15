@@ -1,0 +1,348 @@
+<html>
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap" rel="stylesheet">
+<title>Halloween Houses</title>
+
+
+<style>
+  * {
+        background:black;
+        font-family: 'Didact Gothic', sans-serif;
+        font-weight:bold;
+      color:#d5d5d5;
+      letter-spacing: 3px;
+    user-select: none;
+  }
+    
+    img{filter: invert(1) opacity(0.83);}
+    
+    h1 {font-size:6vw;}
+    
+    button {border:solid;padding:10px;font-size: 5vw;}
+    
+    button:hover {color:black;background-color:#d5d5d5;}
+    
+    #homepage {
+        
+        max-width:60vh;
+margin:0 auto;
+    }
+    
+#walking {
+    display:none;
+    width:60vh;
+margin:30vh auto;
+    z-index:20;
+filter: invert(1) opacity(0.83);
+  background: url("./Resources/WalkingFeet.gif");
+  background-size: 100vh;
+  height: 21vh;
+}
+    
+.container {
+      z-index:10;
+      display:none;
+  margin-top:100px;
+  overflow: hidden;
+      background-color:black;
+max-width:60vh;
+margin:0 auto;
+      padding-top:46vh;
+
+}
+
+.sliding-background {
+filter: invert(1) opacity(0.83);
+    
+  background: url("./Resources/Houses.gif") repeat-x;
+  background-size: 100vh;
+  height: 21vh;
+  width: 50000vw;
+  animation: slide 110s linear infinite;
+}
+
+@keyframes slide{
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-500vw, 0, 0);
+  }
+}
+#black{
+background-color:#d5d5d5;
+height:29vh;
+max-width:60vh;
+margin:0 auto;
+text-align: center;
+font-size:10vw;
+}
+    
+#loadingText{
+    user-select: none;
+    color:black;
+background-color:#d5d5d5;
+        animation: blink 1s infinite;
+    }
+    
+@keyframes blink{
+  0%,100% {
+    filter:opacity(0.2)
+  }
+  50% {
+    filter:opacity(1)
+  }
+}
+    
+    .overlay{
+          position: fixed;
+  background-color: black;
+          top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+    }
+    
+    #preloader {
+        display:none;
+        position:fixed;
+        z-index:20;
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+    text-align:center;
+          }
+    
+#preloader img{
+              max-width: 60%;
+              max-height: 60%;
+            background:white;
+        margin-top: 20vh;
+            margin-left:-20vw;
+          }
+    
+      @keyframes preload {
+
+                0% {opacity:100%;}
+                60% {opacity:100%;}
+              100% {opacity:0%;}
+          }
+    .DynaButton{
+        margin:5px;
+    }
+
+    #pumpkin{
+        width: 40vh;
+    background: white;
+    }
+    
+</style>
+</head>
+
+<body>
+    
+     <div id="preloader"><img id='preloadImage' src=""></div>
+    
+    
+     <div id='walking' class='overlay'></div>
+  <div class="container" id="loadingScreen">
+    <div class="sliding-background"></div><div id='black'><span id='loadingText'>LOADING</span></div>
+  </div>
+    <div id='homepage' style='margin-top:20vh;    margin-left: 8vw;'>
+    <h1 id='IntroText'>HALLOWEEN<br>HOUSES</h1><br><br><button onclick="homepage.style.display='none';loadingScreen.style.display='block';startIntro()" id='TextButton' style='margin-left:13vw;'>Play Game</button>
+        <div id='ForButtons'></div>
+    </div>
+    <div id='DisplayArea'>
+    
+    </div>
+    
+</body>
+
+<script id='helperFunctions'>
+    
+function randomRange(myMin, myMax) {
+  return Math.floor(Math.random() * (myMax - myMin + 1) + myMin);
+}
+
+        
+        function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+        }
+            }
+        function delay(n) {  
+  n = n || 2000;
+  return new Promise(done => {
+    setTimeout(() => {
+      done();
+    }, n);
+  });
+        }
+</script>
+    
+<script>
+    var points = 10;
+    var winpoints = 20; 
+    var turns = randomRange(10,15);
+    var warningtime = randomRange(2,5);
+    var homepage = document.getElementById('homepage');
+    var loadingScreen = document.getElementById('loadingScreen');
+    var TextButton = document.getElementById('TextButton');
+    var IntroText = document.getElementById('IntroText');
+    var ForButtons = document.getElementById('ForButtons');
+    
+    var SplashText = ["It's Halloween night in Gloomville.",">","Time to collect candy.",">",`Time now:<br>7.${randomRange(30,59).toString()}pm<br><br>You have until<br>10.30pm`,'>',`You start with 10 points.<br><br>To win, you need to finish the night with at least ${winpoints} points.<br><br> You lose if you ever go down to 0 points.`,'Start'].reverse();
+    
+    function IntroSplash(){
+        try{
+        IntroText.innerHTML = SplashText.pop().toString();
+        TextButton.innerHTML = SplashText.pop();
+        TextButton.setAttribute("onclick","javascript: IntroSplash()");}
+        catch{nextRound(true);}
+    }
+    
+    function PlayAnimation(link){
+        var preloader = document.getElementById("preloader");
+        document.getElementById("preloadImage").src=link;
+        preloader.style.display='block';
+        setTimeout(function(){preloader.style.display='none'},randomRange(2000,4000));
+        
+    }
+    
+    function MakeButton(text,fun){
+        ForButtons.innerHTML+=`<button class='DynaButton' onclick="${fun}">${text}</button><br>`;
+        
+    }
+    
+    function startIntro(){
+        setTimeout(function(){loadingScreen.remove(),homepage.style.display='block'},randomRange(2000,5000));
+        IntroSplash();
+    }
+
+    function gameOver(state){
+        var output,pumpkin;
+        //1-win , 2-no time, 3-out of points
+        if (state==1){
+            output=`Time's up.<br>You win!`
+            pumpkin='Happy'
+        }
+        else if (state ==2){
+            output=`Time's up.<br>You lose.`
+            pumpkin='Sad'
+        }
+        else{
+            output='Lousy neighbors.<br>You Quit.'
+            pumpkin='Sad'
+        }
+        ForButtons.innerHTML='';
+        IntroText.innerHTML=output;
+        IntroText.innerHTML += `<br><img id='pumpkin' src="./Resources/${pumpkin}Pumpkin.gif">`
+        IntroText.style.display='block';
+        TextButton.style.display='block';
+        TextButton.innerHTML = '>';
+        TextButton.setAttribute("onclick","javascript: credits()");
+            
+    }
+    function playAgain(){
+        IntroText.style.display='none';
+        MakeButton('Play Again?',"document.location.reload()");
+        
+    }
+    
+    function credits(){
+        ForButtons.innerHTML='';
+        TextButton.style.display='none'
+        IntroText.innerHTML = 'Created by<br><br>DON BOSCO<br>MARK BOSCO';
+         MakeButton('Play Again?',"document.location.reload()");
+        //setTimeout(playAgain,randomRange(3000,4000))
+        
+    }
+    
+    function nextRound(first=false){
+        ForButtons.innerHTML='';
+        PlayAnimation("./Resources/loading.gif");
+
+
+        IntroText.style.display='none';
+        TextButton.style.display='none';
+        var directions = ['Go Left','Go Right','Go Forward'].reverse();
+        if (first==true){
+            MakeButton(directions.pop(),'showHouse()');
+            MakeButton(directions.pop(),'showHouse()');
+            MakeButton(directions.pop(),'showHouse()');
+        }
+        else{
+            shuffleArray(directions);
+            MakeButton(directions.pop(),'showHouse()');
+            if(randomRange(1,3)==2){MakeButton(directions.pop(),'showHouse()');}
+            if(randomRange(1,4)==2){MakeButton(directions.pop(),'showHouse()');}
+        }
+        if (turns == warningtime){
+            ForButtons.innerHTML='';
+            IntroText.innerHTML=`Uh oh!<br><br>Time's running out!`
+            TextButton.innerHTML = '>';
+            TextButton.setAttribute("onclick","javascript: nextRound()");
+            TextButton.style.display='block';
+            IntroText.style.display='block';
+        }
+        
+        if (turns == 0){
+            if (points >= winpoints){
+                gameOver(1)
+            }
+            else{gameOver(2)}
+        }
+        
+        if (points == 0){gameOver(3)}
+        turns -=1;
+    }
+    
+    
+    function showHouse(){
+        ForButtons.innerHTML='';
+        var size = ['tiny','small','big','giant'];
+        var color = ['red','blue','yellow','green','white','pink','brown']
+        shuffleArray(size);
+        shuffleArray(color);
+        IntroText.innerHTML = `You see a ${size[0]} ${color[0]} house.`
+        IntroText.style.display='block';
+        MakeButton('Knock','evalHouse()')
+        MakeButton('Ignore','nextRound(false)')
+        
+    }
+    
+    function evalHouse(){
+        ForButtons.innerHTML='';
+        var newpoints = randomRange(2,4);
+        PlayAnimation('./Resources/Knocking.gif');
+        if (randomRange(1,3)!=2){
+            var output = `Nice folks!<br>They give you some candy.<br><br>+ ${newpoints} points`;
+            points += newpoints;
+        }
+        else
+            {
+            var output = `Mean folks!<br>They prank you.<br><br>- ${newpoints} points`;
+            points -= newpoints;
+            }
+        IntroText.innerHTML=output;
+        TextButton.style.display='block';
+        TextButton.innerHTML = '>';
+        TextButton.setAttribute("onclick","javascript: showScore()");
+    }
+    
+    function showScore(){
+        IntroText.innerHTML=`Current Score:<br><br>${points} points`
+        TextButton.style.display='block';
+        TextButton.innerHTML = '>';
+        TextButton.setAttribute("onclick","javascript: nextRound()");
+    }
+    
+    </script>
+    
+</html>
